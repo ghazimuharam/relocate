@@ -1,0 +1,29 @@
+# Claude Code settings
+.claude/
+CLAUDE.md
+
+# Build artifacts
+/relocate
+*.exe
+*.dll
+*.so
+*.dylib
+/dist/
+
+# Test files
+*.test
+*.out
+
+# Dependency directories
+vendor/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# GoReleaser
+dist/

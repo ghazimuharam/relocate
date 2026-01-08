@@ -1,0 +1,77 @@
+# .goreleaser.yaml configuration for relocate
+# See https://goreleaser.com/ for documentation
+
+project_name: relocate
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+    main: ./cmd/relocate/main.go
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+      - config.example.json
+
+brews:
+  - name: relocate
+    homepage: https://github.com/ghazimuharam/relocate
+    tap:
+      owner: ghazimuharam
+      name: homebrew-relocate
+      branch: main
+    folder: Formula
+    goarm: "6"
+    skip_upload: false
+    description: "TUI for quickly SSH-ing into AWS EC2 instances"
+    license: MIT
+    test: |
+      system "#{bin}/relocate --version"
+    install: |
+      bin.install "relocate"
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+
+release:
+  github:
+    owner: ghazimuharam
+    name: relocate
+  draft: false
+  prerelease: auto
+  mode: replace
+
+announce:
+  twitter:
+    enabled: false
